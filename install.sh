@@ -125,6 +125,16 @@ $APP_BIN \
 
 PID=$!
 
+# 等待一小段时间，检查进程是否还在运行
+sleep 1
+if ! kill -0 "$PID" 2>/dev/null; then
+    echo ""
+    echo "错误：安装服务启动失败，进程已退出"
+    echo "请检查上面的错误信息"
+    echo "提示：如果遇到版本问题，可以设置 FORCE_DOWNLOAD=1 强制重新下载最新版本"
+    exit 1
+fi
+
 # 自动打开浏览器（如果环境支持）
 URL="http://127.0.0.1:$PORT"
 
@@ -137,10 +147,25 @@ else
 fi
 
 echo "等待用户完成安装..."
-wait $PID || true
+echo "（按 Ctrl+C 可退出）"
+
+# 等待进程退出，并捕获退出码
+if wait $PID; then
+    EXIT_CODE=0
+else
+    EXIT_CODE=$?
+fi
 
 # 清除 trap，因为正常退出时不需要清理
 trap - EXIT INT TERM
+
+# 检查退出码
+if [ "$EXIT_CODE" -ne 0 ]; then
+    echo ""
+    echo "错误：安装服务异常退出（退出码: $EXIT_CODE）"
+    echo "请检查上面的错误信息"
+    exit $EXIT_CODE
+fi
 
 # 可选：注册 systemd 服务
 # cat >/etc/systemd/system/myapp.service <<EOF
