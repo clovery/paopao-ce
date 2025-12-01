@@ -2,7 +2,7 @@
 set -e
 
 # 配置
-DOWNLOAD_URL="${PAOPAO_INSTALLER_URL:-https://github.com/clovery/paopao-ce/refs/heads/main/releases/latest/download}"
+DOWNLOAD_URL="${PAOPAO_INSTALLER_URL:-https://raw.githubusercontent.com/clovery/paopao-ce/refs/heads/main/releases/latest/download}"
 OUT_FILE="/etc/paopao/config.json"
 INSTALL_DIR="${HOME}/.paopao-installer"
 APP_BIN="${INSTALL_DIR}/paopao-installer"
