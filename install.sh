@@ -3,7 +3,6 @@ set -e
 
 # 配置
 DOWNLOAD_URL="${PAOPAO_INSTALLER_URL:-https://raw.githubusercontent.com/clovery/paopao-ce/refs/heads/main/releases/latest/download}"
-OUT_FILE="/etc/paopao/config.json"
 INSTALL_DIR="${HOME}/.paopao-installer"
 APP_BIN="${INSTALL_DIR}/paopao-installer"
 
@@ -122,8 +121,7 @@ echo "启动安装服务..."
 
 # 启动 Go 安装器
 $APP_BIN \
-  --port "$PORT" \
-  --out "$OUT_FILE" &
+  --port "$PORT" &
 
 PID=$!
 
@@ -143,19 +141,6 @@ wait $PID || true
 
 # 清除 trap，因为正常退出时不需要清理
 trap - EXIT INT TERM
-
-# 检查配置文件是否生成
-if [ ! -f "$OUT_FILE" ]; then
-    echo "安装未完成：未找到 $OUT_FILE"
-    exit 1
-fi
-
-echo "配置成功生成：$OUT_FILE"
-echo "安装流程继续..."
-
-# 可选：创建目录 + 设置权限
-mkdir -p /etc/paopao
-chmod 600 "$OUT_FILE"
 
 # 可选：注册 systemd 服务
 # cat >/etc/systemd/system/myapp.service <<EOF
